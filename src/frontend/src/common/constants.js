@@ -33,4 +33,6 @@ export const DAY_IN_MILLISEC = DAY_IN_SEC * SEC;
 
 // Разделитель тегов внутри строки тегов.
 
+export const MOVE = 'move';
 export const TAG_SEPARATOR = '#';
+export const DATA_TRANSFER_PAYLOAD = 'payload';

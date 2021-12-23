@@ -1,16 +1,21 @@
 <template>
   <header class="header">
     <div class="header__logo">
-      <a class="logo">
+      <router-link
+        to="/"
+        class="logo"
+      >
         <img
           src="@/assets/img/logo.svg"
           alt="VueWork logo"
           width="147"
           height="23"
         />
-      </a>
+      </router-link>
     </div>
-    <div>
+    <div
+      class="header__items"
+    >
       <form
         action="#"
         class="header__search"
@@ -21,15 +26,18 @@
           name="search"
           required
           placeholder="Поиск"
-          @input="$emit(
-            'applyFilters',
-            { item: $event.target.value, entity: 'search' }
-          )"
+          @input="applyFilters"
         />
         <button type="submit">
           Найти
         </button>
       </form>
+      <router-link
+        to="/tasks/create"
+        class="header__create-task"
+      >
+        Создать карточку
+      </router-link>
     </div>
   </header>
 </template>
@@ -38,16 +46,22 @@
 export default {
   name: 'AppLayoutHeader',
   props: {
+    showMenu: {
+      type: Boolean,
+      default: true
+    },
     filters: {
       type: Object,
       required: true
     }
+  },
+  methods: {
+    applyFilters(e) {
+      this.$emit('applyFilters',{ item: e.target.value, entity: 'search' });
+    }
   }
 };
 </script>
-
-// Используем scss препроцессор и scoped, чтобы ограничить область
-// влияния стилей текущим компонентом.
 
 <style lang="scss" scoped>
 .header {

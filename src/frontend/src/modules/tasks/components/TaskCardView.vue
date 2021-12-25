@@ -179,7 +179,6 @@ export default {
     }
   },
   mounted() {
-    console.log('ttt');
     this.$refs.dialog?.focus();
   },
   methods: {

@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: 'AppInput',
+  name: 'AppTextarea',
   model: {
     prop: 'value',
     event: 'input'

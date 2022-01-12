@@ -47,7 +47,7 @@ export default {
         }
       });
 
-      this.$emit('updateTasks', tasksToUpdate);
+      tasksToUpdate.map(task => this.$store.dispatch('Tasks/put', task));
     }
   }
 };

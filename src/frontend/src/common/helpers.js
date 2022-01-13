@@ -10,6 +10,11 @@ import {
 import timeStatuses from '@/common/enums/timeStatuses';
 import taskStatuses from '@/common/enums/taskStatuses';
 
+// Преобразование первой буквы в заглавную
+
+export const capitalize = string =>
+  `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+
 // Получение тегов из строки тегов.
 
 export const getTagsArrayFromString = tags => {

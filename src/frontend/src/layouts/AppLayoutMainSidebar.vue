@@ -45,7 +45,7 @@
   </AppDrop>
 </template>
 
-<script>
+<script>import { mapState, mapGetters } from 'vuex';
 import AppDrop from '@/common/components/AppDrop';
 import taskStatuses from '@/common/enums/taskStatuses';
 import TaskCard from '@/modules/tasks/components/TaskCard';
@@ -55,16 +55,6 @@ export default {
   name: 'AppLayoutMainSidebar',
   components: { TaskCard, AppDrop },
   mixins: [moveTask],
-  props: {
-    tasks: {
-      type: Array,
-      required: true
-    },
-    filters: {
-      type: Object,
-      required: true
-    }
-  },
   data() {
     return {
       taskStatuses,
@@ -72,8 +62,10 @@ export default {
     };
   },
   computed: {
+    ...mapState('Tasks', ['tasks']),
+    ...mapGetters('Tasks', ['filteredTasks']),
     sidebarTasks() {
-      return this.tasks
+      return this.filteredTasks
         .filter(task => !task.columnId)
         .sort((a, b) => a.sortOrder - b.sortOrder);
     }

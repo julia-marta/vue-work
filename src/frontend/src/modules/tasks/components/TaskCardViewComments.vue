@@ -47,8 +47,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { validator } from '@/common/mixins';
-import users from '@/static/users.json';
 
 export default {
   name: 'TaskCardViewComments',
@@ -73,9 +73,7 @@ export default {
     }
   }),
   computed: {
-    user() {
-      return users[1];
-    }
+    ...mapState('Auth', ['user'])
   },
   watch: {
     newComment() {

@@ -151,14 +151,13 @@ export class TaskApiService extends CrudApiService {
 
   // Создание новой задачи
   async post(task) {
-    const { data: newTask } =
-      await axios.post('tasks', this._createRequest(task));
+    const newTask = await super.post(this._createRequest(task));
     return this._normalize(newTask);
   }
 
   // Обновление 1 задачи
   async put(task) {
-    await axios.put(`tasks/${task.id}`, this._createRequest(task));
+    await super.put(this._createRequest(task));
     return this._normalize(task);
   }
 }

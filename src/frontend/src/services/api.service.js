@@ -145,7 +145,7 @@ export class TaskApiService extends CrudApiService {
 
   // Получение 1 задачи по id
   async get(id, config = {}) {
-    const { data } = await axios.get(`tasks/${id}`, config);
+    const data = await super.get(id, config);
     return this._normalize(data);
   }
 

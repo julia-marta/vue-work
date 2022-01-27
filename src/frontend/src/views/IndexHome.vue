@@ -1,5 +1,8 @@
 <template>
-  <section class="desk">
+  <section
+    class="desk"
+    :class="{'desk--rubber': !isUserAuthorized}"
+  >
     <router-view />
     <div class="desk__header">
       <div class="desk__header-top">
@@ -7,6 +10,7 @@
           Design Coffee Lab
         </h1>
         <button
+          v-if="getUserAttribute('isAdmin')"
           class="desk__add"
           type="button"
           @click="addColumn"
@@ -78,13 +82,14 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex';
+import { mapState, mapActions, mapGetters, mapMutations } from 'vuex';
 import { STATUSES } from '@/common/constants';
 import DeskColumn from '@/modules/columns/components/DeskColumn';
 import { UPDATE_FILTERS } from '@/store/mutations-types';
 
 export default {
   name: 'IndexHome',
+  layout: 'AppLayoutMain',
   components: { DeskColumn },
   data() {
     return {
@@ -94,8 +99,13 @@ export default {
   },
   computed: {
     ...mapState(['users']),
+    ...mapState('Auth', ['user']),
     ...mapState('Columns', ['columns']),
-    ...mapState('Tasks', ['filters'])
+    ...mapState('Tasks', ['filters']),
+    ...mapGetters('Auth', ['getUserAttribute']),
+    isUserAuthorized() {
+      return this.user && Object.keys(this.user).length;
+    }
   },
   methods: {
     ...mapActions('Columns', ['post', 'put', 'delete']),
@@ -135,6 +145,7 @@ export default {
   width: calc(100% - 400px);
   padding-top: 27px;
   background-color: $white-900;
+  $bl: ".desk";
   &--rubber {
     width: 100%;
   }

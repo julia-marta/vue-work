@@ -1,29 +1,21 @@
 import {
   UPDATE_ENTITY
 } from '@/store/mutations-types';
-import { uniqueId } from 'lodash';
-
 
 export default {
   namespaced: true,
   actions: {
-    // создание нового объекта tick
-    post({ commit, rootState }, tick) {
-      // TODO: Add api call
-      const newTick = {
-        ...tick,
-        id: uniqueId()
-      };
+    // Отправляем запрос на добавление нового tick.
+    async post({ commit, rootState }, tick) {
+      const data = await this.$api.ticks.post(tick);
 
       // обновляем tick в объекте задачи
       const task = rootState.Tasks.tasks.find(({ id }) => id === tick.taskId);
       if (task) {
         if (Array.isArray(task.ticks)) {
-          // TODO: use api data instead of newTick
-          task.ticks = [...task.ticks, newTick];
+          task.ticks = [...task.ticks, data];
         } else {
-          // TODO: use api data instead of tick
-          task.ticks = [newTick];
+          task.ticks = [data];
         }
         commit(UPDATE_ENTITY,
           {
@@ -35,14 +27,15 @@ export default {
       }
     },
 
-    // обновление объекта tick (обновляем tick внутри задачи)
-    put({ commit, rootState }, tick) {
-      // TODO: Add api call
+    // Отправляем запрос на обновление tick
+    async put({ commit, rootState }, tick) {
+      await this.$api.ticks.put(tick);
+
       const task = rootState.Tasks.tasks.find(({ id }) => id === tick.taskId);
 
       if (task && task.ticks) {
         const index = task.ticks.findIndex(({ id }) => id === tick.id);
-        if (~index) {
+        if (index) {
           task.ticks.splice(index, 1, tick);
           commit(UPDATE_ENTITY,
             {
@@ -51,15 +44,13 @@ export default {
               value: task
             }, { root: true }
           );
-        } else {
-          task.ticks.push(tick);
-        }
+        };
       }
     },
 
-    // удаляем tick (пока что создаём заглушку для будущего API-вызова)
-    delete(_, id) {
-      // TODO: Add api call
+    // Отправляем запрос на удаление tick
+    async delete({ commit }, id) {
+      await this.$api.ticks.delete(id);
     }
   }
 };

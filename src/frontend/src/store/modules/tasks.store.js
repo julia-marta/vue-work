@@ -5,8 +5,8 @@ import {
   DELETE_ENTITY,
   UPDATE_FILTERS
 } from '@/store/mutations-types';
-import { capitalize, normalizeTask } from '@/common/helpers';
-import jsonTasks from '@/static/tasks.json';
+import { cloneDeep } from 'lodash';
+import { capitalize } from '@/common/helpers';
 
 const entity = 'tasks';
 const module = capitalize(entity);
@@ -75,8 +75,10 @@ export default {
   },
 
   actions: {
-    query({ commit }) {
-      const data = jsonTasks.map(task => normalizeTask(task));
+    // Получаем список задач
+    async query({ commit }, config) {
+      const data = await this.$api.tasks.query(config);
+
       commit(
         SET_ENTITY,
         {
@@ -86,34 +88,31 @@ export default {
       );
     },
 
-    post({ state, commit, rootState }, task) {
-      const id = state.tasks.length + 1;
-      const newTask = normalizeTask({
-        ...task,
-        ticks: [],
-        id
-      });
-      if (newTask.userId) {
-        const taskUser = rootState.users
-          .find(({ id }) => id === newTask.userId);
-        newTask.user = taskUser || null;
-      }
+    // отправляем запрос на сохранение новой задачи
+    async post({ commit }, task) {
+      const taskCopy = cloneDeep(task);
+      const data = await this.$api.tasks.post(taskCopy);
+
       commit(ADD_ENTITY,
         {
           ...namespace,
-          value: newTask
+          value: data
         }, { root: true }
       );
-      return newTask;
+      return data;
     },
 
-    put({ commit, rootState }, task) {
-      const { status, timeStatus, user, ...result } = task;
+    // Отправляем запрос на обновление задачи
+    async put({ commit, rootState }, task) {
+    // Мутация перед запросом - для плавного drag-n-drop перетаскивания
+      commit(UPDATE_ENTITY,
+        {
+          ...namespace,
+          value: task
+        }, { root: true }
+      );
 
-      const newTask = normalizeTask({
-        ...result,
-        ticks: result.ticks || []
-      });
+      const newTask = await this.$api.tasks.put(task);
 
       if (newTask.userId) {
         const taskUser = rootState.users
@@ -130,8 +129,10 @@ export default {
       );
     },
 
-    delete({ commit }, id) {
-      // TODO: Add api call
+    // Отправляем запрос на удаление задачи
+    async delete({ commit }, id) {
+      await this.$api.tasks.delete(id);
+
       commit(DELETE_ENTITY,
         {
           ...namespace,

@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash';
 import {
   SET_ENTITY,
   ADD_ENTITY,
@@ -6,7 +5,6 @@ import {
   DELETE_ENTITY
 } from '@/store/mutations-types';
 import { capitalize } from '@/common/helpers';
-import jsonColumns from '@/static/columns.json';
 
 const entity = 'columns';
 const module = capitalize(entity);
@@ -18,9 +16,10 @@ export default {
     columns: []
   },
   actions: {
-    // получение списка колонок
-    query({ commit }) {
-      const data = jsonColumns; // TODO: Add api call
+    // получаем колонки с сервера
+    async query({ commit }) {
+      const data = await this.$api.columns.query();
+
       commit(
         SET_ENTITY,
         {
@@ -30,9 +29,10 @@ export default {
       );
     },
 
-    // создание новой колонки
-    post({ commit }, column) {
-      const data = cloneDeep(column); // TODO: Add api call
+    // отправляем запрос на добавление новой колонки
+    async post({ commit }, column) {
+      const data = await this.$api.columns.post(column);
+
       commit(ADD_ENTITY,
         {
           ...namespace,
@@ -41,9 +41,10 @@ export default {
       );
     },
 
-    // обновление колонки
-    put({ commit }, column) {
-      // TODO: Add api call
+    // отправляем запрос на обновление колонки
+    async put({ commit }, column) {
+      await this.$api.columns.put(column);
+
       commit(UPDATE_ENTITY,
         {
           ...namespace,
@@ -52,9 +53,10 @@ export default {
       );
     },
 
-    // удаление колонки
-    delete({ commit }, id) {
-      // TODO: Add api call
+    // отправляем запрос на удаление колонки
+    async delete({ commit }, id) {
+      await this.$api.columns.delete(id);
+
       commit(DELETE_ENTITY,
         {
           ...namespace,

@@ -81,18 +81,19 @@ export default {
     }
   },
   methods: {
-    submit() {
+    async submit() {
       if (!this.$validateFields(
         { newComment: this.newComment }, this.validations)
       ) {
         return;
       }
       const { id, name, avatar } = this.user;
-      const comment = {
+      // Отправляем новый комментарий на сервер.s
+      const comment = await this.$api.comments.post({
         text: this.newComment,
         taskId: this.taskId,
         userId: id
-      };
+      });
       this.newComment = '';
       this.$emit('new-comment', {
         ...comment,

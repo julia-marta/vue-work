@@ -15,11 +15,14 @@
       />
       <div class="task-card__block">
         <div class="task-card__row">
-          <h1 class="task-card__name task-card__name--min">
+          <h1
+            class="task-card__name"
+            :class="{ 'task-card__name--min' : isAdmin }"
+          >
             {{ task ? task.title : '' }}
           </h1>
-
           <a
+            v-if="isAdmin"
             class="task-card__edit"
             @click="$router.push({
               name: 'TaskEdit',
@@ -76,7 +79,7 @@
       </div>
 
       <div
-        v-if="task && task.url && task.urlDescription"
+        v-if="task && task.url"
         class="task-card__block task-card__links"
       >
         <h4 class="task-card__title">
@@ -88,13 +91,13 @@
             :href="task.url"
             target="_blank"
           >
-            {{ task.urlDescription || 'ссылка' }}
+            {{ task.urlDescription || task.url }}
           </a>
         </div>
       </div>
 
       <div
-        v-if="task && task.ticks && task.ticks.length"
+        v-if="showTicks"
         class="task-card__block"
       >
         <TaskCardViewTicksList
@@ -105,7 +108,7 @@
       </div>
 
       <div
-        v-if="task && task.tags && task.tags.length"
+        v-if="showTags"
         class="task-card__block"
       >
         <h4 class="task-card__title">
@@ -131,6 +134,7 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { getReadableDate, getTimeAgo } from '@/common/helpers';
 import { taskCardDate } from '@/common/mixins';
+import { TASK_DETAILS_CONFIG } from '@/common/queryConfig';
 import TaskCardViewTicksList
   from '@/modules/tasks/components/TaskCardViewTicksList';
 import TaskCardTags from '@/modules/tasks/components/TaskCardTags';
@@ -149,9 +153,9 @@ export default {
     task: null
   }),
   computed: {
-    ...mapState('Tasks', ['tasks']),
     ...mapState('Auth', ['user']),
     ...mapGetters('Tasks', ['getTaskById']),
+    ...mapGetters('Auth', ['getUserAttribute']),
     dueDate() {
       if (!this.task) {
         return false;
@@ -161,19 +165,47 @@ export default {
     },
     timeAgo() {
       return getTimeAgo(this.task?.dueDate);
+    },
+    isAdmin() {
+      return this.getUserAttribute('isAdmin');
+    },
+    isTaskOwner() {
+      if (!this.user) {
+        return false;
+      }
+      const { isAdmin, id: userId } = this.user;
+      return isAdmin || userId === this.task.userId;
+    },
+    showTicks() {
+      return this.task && this.task.ticks
+          && this.task.ticks.length && this.isTaskOwner;
+    },
+    showTags() {
+      return this.task && this.task.tags && this.task.tags.length;
     }
   },
-  created() {
-    const id = this.$route.params.id;
-    const task = this.tasks.find(task => +task.id === +id);
-    if (task) {
-      this.task = task;
-    } else {
+  // Здесь мы пошли на ухищрение. Когда мы только получаем задачу —
+  // ждём обновления шаблона и делаем фокус на корневом элементе компонента.
+  // На нём же у нас есть обработчик нажатия ESC — закрытие модального окна.
+  watch: {
+    task: {
+      async handler(task) {
+        if (task) {
+          await this.$nextTick();
+            this.$refs.dialog?.focus();
+        }
+      }
+    }
+  },
+  // При открытии модального окна отправляем запрос на получение задачи.
+  // При ошибке возвращаем пользователя на главную страницу.
+  async created() {
+    try {
+      const id = this.$route.params.id;
+      this.task = await this.$api.tasks.get(id, TASK_DETAILS_CONFIG);
+    } catch {
       this.$router.push('/').catch(() => {});
     }
-  },
-  mounted() {
-    this.$refs.dialog?.focus();
   },
   methods: {
     ...mapActions('Ticks', ['put']),

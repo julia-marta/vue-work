@@ -4,47 +4,32 @@ import {
   DAY_IN_SEC,
   MONTH_IN_SEC,
   YEAR_IN_SEC,
-  TAG_SEPARATOR,
-  DAY_IN_MILLISEC
+  TAG_SEPARATOR
 } from '@/common/constants';
-import timeStatuses from '@/common/enums/timeStatuses';
-import taskStatuses from '@/common/enums/taskStatuses';
+import resources from '@/common/enums/resources';
+import {
+  AuthApiService,
+  CrudApiService,
+  ReadOnlyApiService,
+  TaskApiService
+} from '@/services/api.service';
 
 // Преобразование первой буквы в заглавную
 
 export const capitalize = string =>
   `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
 
+// установка авторизованного пользователя в хранилище
+export const setAuth = store => {
+  store.$api.auth.setAuthHeader();
+  store.dispatch('Auth/getMe');
+};
+
 // Получение тегов из строки тегов.
 
 export const getTagsArrayFromString = tags => {
   const array = tags.split(TAG_SEPARATOR);
   return array.slice(1, array.length);
-};
-
-// Нормализация статуса по времени.
-
-export const getTimeStatus = dueDate => {
-  if (!dueDate) {
-    return '';
-  }
-  const currentTime = +new Date();
-  const taskTime = Date.parse(dueDate);
-  const timeDelta = taskTime - currentTime;
-  if (timeDelta > DAY_IN_MILLISEC) {
-    return '';
-  }
-  return timeDelta < 0 ? timeStatuses.DEADLINE : timeStatuses.EXPIRED;
-};
-
-// Нормализация задачи.
-
-export const normalizeTask = task => {
-  return {
-    ...task,
-    status: task.statusId ? taskStatuses[task.statusId] : '',
-    timeStatus: getTimeStatus(task.dueDate)
-  };
 };
 
 // Получение даты в читабельном формате.
@@ -131,4 +116,20 @@ export const createUUIDv4 = () => {
 
 export const createNewDate = () => {
   return new Date(new Date().setHours(23,59,59,999));
+};
+
+// хелпер для создания экземпляров сервисов на основании ресурсов:
+
+export const createResources = notifier => {
+  return {
+    [resources.USERS]:
+      new ReadOnlyApiService(resources.USERS, notifier),
+    [resources.AUTH]: new AuthApiService(notifier),
+    [resources.TASKS]: new TaskApiService(notifier),
+    [resources.COLUMNS]:
+      new CrudApiService(resources.COLUMNS, notifier),
+    [resources.TICKS]: new CrudApiService(resources.TICKS, notifier),
+    [resources.COMMENTS]:
+      new CrudApiService(resources.COMMENTS, notifier)
+  };
 };

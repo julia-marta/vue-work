@@ -1,15 +1,19 @@
 <template>
   <div class="app-layout-main">
     <AppNotifications />
-    <AppLayoutHeader />
+    <AppLayoutHeader
+      :show-menu="isAuthenticated"
+      :show-login="!isAuthenticated && $route.name !== 'Login' "
+    />
     <div class="content">
-      <AppLayoutMainSidebar />
+      <AppLayoutMainSidebar v-if="isAuthenticated" />
       <slot />
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import AppLayoutMainSidebar from '@/layouts/AppLayoutMainSidebar';
 import AppLayoutHeader from '@/layouts/AppLayoutHeader';
 
@@ -18,6 +22,13 @@ export default {
   components: {
     AppLayoutMainSidebar,
     AppLayoutHeader
+  },
+  computed: {
+    // Получаем флаг авторизации из хранилища
+    ...mapState(['Auth']),
+    isAuthenticated() {
+      return this.Auth.isAuthenticated;
+    }
   }
 };
 </script>

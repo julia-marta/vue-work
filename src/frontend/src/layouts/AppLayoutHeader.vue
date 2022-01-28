@@ -6,7 +6,7 @@
         class="logo"
       >
         <img
-          src="@/assets/img/logo.svg"
+          src="~@/assets/img/logo.svg"
           alt="VueWork logo"
           width="147"
           height="23"
@@ -14,6 +14,7 @@
       </router-link>
     </div>
     <div
+      v-if="showMenu"
       class="header__items"
     >
       <form
@@ -33,23 +34,88 @@
         </button>
       </form>
       <router-link
+        v-if="getUserAttribute('isAdmin')"
         to="/tasks/create"
         class="header__create-task"
       >
         Создать карточку
       </router-link>
+      <a
+        href="#"
+        class="header__user"
+        @click.stop="isMenuOpened = true"
+      >
+        <img
+          :src="user.avatar"
+          :alt="user.name"
+          width="40"
+          height="40"
+        />
+      </a>
+
+      <div
+        v-if="isMenuOpened"
+        v-click-outside="hideUserMenu"
+        class="header__menu"
+      >
+        <div class="user-menu">
+          <img
+            :src="user.avatar"
+            width="56"
+            height="56"
+            alt="Ваш аватар"
+          />
+          <span>{{ user.name }}</span>
+          <a
+            href="#"
+            class="user-menu__link"
+            @click="$logout"
+          >
+            Выйти
+          </a>
+        </div>
+      </div>
     </div>
+    <a
+      v-if="showLogin"
+      class="header__login"
+      @click="$router.push('/login')"
+    >
+      Войти
+    </a>
   </header>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapGetters, mapMutations } from 'vuex';
+import { logout } from '@/common/mixins';
 import { UPDATE_FILTERS } from '@/store/mutations-types';
 
 export default {
   name: 'AppLayoutHeader',
+  mixins: [logout],
+  props: {
+    showMenu: {
+      type: Boolean,
+      default: true
+    },
+    showLogin: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      isMenuOpened: false
+    };
+  },
   computed: {
-    ...mapState('Tasks', ['filters'])
+    ...mapState(['Auth']),
+    ...mapState('Tasks', ['filters']),
+    ...mapGetters('Auth', ['getUserAttribute']),
+    user() {
+      return this.Auth.user || {};
+    }
   },
   methods: {
     ...mapMutations('Tasks', {
@@ -57,6 +123,9 @@ export default {
     }),
     search(e) {
       this.updateFilters({ search: e.target.value });
+    },
+    hideUserMenu() {
+      this.isMenuOpened = false;
     }
   }
 };
@@ -103,7 +172,7 @@ export default {
       border: none;
       outline: none;
       background-color: transparent;
-      background-image: url("~@/assets/img/icon-search.svg");
+      background-image: url("../assets/img/icon-search.svg");
       background-repeat: no-repeat;
       background-size: cover;
     }
@@ -139,7 +208,7 @@ export default {
       width: 16px;
       height: 21px;
       content: "";
-      background-image: url("~@/assets/img/login.svg");
+      background-image: url("../assets/img/login.svg");
     }
     &:hover {
       background-color: $blue-800;

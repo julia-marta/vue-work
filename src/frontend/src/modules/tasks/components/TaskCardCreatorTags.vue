@@ -3,12 +3,14 @@
     <div class="task-card__tags--text">
       Добавьте тэги, разделенные символом #
     </div>
-    <TaskCardCreatorTagsAnalyzer
-      v-if="showAnalyzer"
-      class="task-card__tags-analyzer"
-      :tags="tags"
-      @setTags="setTags"
-    />
+    <transition name="replace">
+      <TaskCardCreatorTagsAnalyzer
+        v-if="showAnalyzer"
+        class="task-card__tags-analyzer"
+        :tags="tags"
+        @setTags="setTags"
+      />
+    </transition>
   </div>
 </template>
 
@@ -60,5 +62,13 @@ export default {
     color: $blue-gray-600;
     @include r-s10-h12;
   }
+}
+.replace-enter-active,
+.replace-leave-active {
+  transition: opacity $animationSpeed;
+}
+.replace-enter,
+.replace-leave-to {
+  opacity: 0;
 }
 </style>

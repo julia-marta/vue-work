@@ -8,7 +8,7 @@
       class="backlog__title"
       @click="backlogIsHidden = !backlogIsHidden"
     >
-      <span>
+      <span v-show="!backlogIsHidden">
         Бэклог
       </span>
     </button>
@@ -33,14 +33,16 @@
             </div>
           </div>
           <div class="backlog__target-area">
-            <TaskCard
-              v-for="task in sidebarTasks"
-              :key="task.id"
-              :task="task"
-              class="backlog__task"
-              @click="$router.push({ path: `/${task.id}` })"
-              @drop="$moveTask($event, task)"
-            />
+            <transition-group name="tasks">
+              <TaskCard
+                v-for="task in sidebarTasks"
+                :key="task.id"
+                :task="task"
+                class="backlog__task"
+                @click="$router.push({ path: `/${task.id}` })"
+                @drop="$moveTask($event, task)"
+              />
+            </transition-group>
           </div>
         </div>
       </div>
@@ -85,7 +87,6 @@ export default {
 <style lang="scss" scoped>
 .backlog {
   $bl: ".backlog";
-  $animationSpeed: 0.5s;
   display: flex;
   overflow: hidden;
   flex-direction: column;
@@ -94,6 +95,7 @@ export default {
   max-width: 400px;
   padding-top: 16px;
   background-color: $gray-100;
+  transition: $animationSpeed;
 
   &__title {
     position: relative;
@@ -213,5 +215,15 @@ export default {
     margin-bottom: 11px;
     margin-left: 12px;
   }
+}
+// Transitions
+.tasks-enter-active,
+.tasks-leave-active {
+  transition: all $animationSpeed ease;
+}
+.tasks-enter,
+.tasks-leave-to {
+  transform: scale(1.1);
+  opacity: 0;
 }
 </style>

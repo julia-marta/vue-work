@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import TaskCardCreator from '@/modules/tasks/components/TaskCardCreator';
 import { TASK_DETAILS_CONFIG } from '@/common/queryConfig';
 
@@ -17,9 +16,6 @@ export default {
     return {
       task: null
     };
-  },
-  computed: {
-    ...mapState('Tasks', ['tasks'])
   },
   // Раньше мы получали задачу из списка задач по id.
   // Ещё здесь же мы делали нормализацию.

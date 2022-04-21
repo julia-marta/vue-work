@@ -1,7 +1,7 @@
 <template>
   <section
     class="desk"
-    :class="{'desk--rubber': !isUserAuthorized}"
+    :class="{'desk--rubber': isUserAuthorized}"
   >
     <router-view />
     <div class="desk__header">
@@ -13,6 +13,7 @@
           v-if="getUserAttribute('isAdmin')"
           class="desk__add"
           type="button"
+          data-test="add-column"
           @click="addColumn"
         >
           Добавить столбец
@@ -27,6 +28,7 @@
               :title="user.name"
               class="user-filter__item"
               :class="{ active: filters.users.some(id => id === user.id) }"
+              data-test="user-filter"
               @click="filterTasks(user.id, 'users')"
             >
               <a class="user-filter__button">
@@ -47,12 +49,14 @@
               :key="value"
               class="meta-filter__item"
               :class="{ active: filters.statuses.some(s => s === value) }"
+              data-test="status-filter"
               @click="filterTasks(value, 'statuses')"
             >
               <a
                 class="meta-filter__status"
                 :class="`meta-filter__status--${value}`"
                 :title="label"
+                data-test="status-filter-icon"
               />
             </li>
           </ul>
@@ -68,6 +72,7 @@
         v-for="column in columns"
         :key="column.id"
         :column="column"
+        data-test="columns"
         @update="put($event)"
         @delete="deleteColumn"
       />
@@ -75,6 +80,7 @@
     <p
       v-else
       class="desk__emptiness"
+      data-test="no-columns-text"
     >
       Пока нет ни одной колонки
     </p>

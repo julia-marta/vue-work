@@ -13,6 +13,8 @@ import {
   ReadOnlyApiService,
   TaskApiService
 } from '@/services/api.service';
+import users from '@/static/users';
+import { SET_ENTITY } from '@/store/mutations-types';
 
 // Преобразование первой буквы в заглавную
 
@@ -132,4 +134,19 @@ export const createResources = notifier => {
     [resources.COMMENTS]:
       new CrudApiService(resources.COMMENTS, notifier)
   };
+};
+
+// вспомогательный метод аутентификации пользователя для тестов
+
+export const authenticateUser = store => {
+  store.commit(SET_ENTITY, {
+    module: 'Auth',
+    entity: 'user',
+    value: users[0]
+  });
+  store.commit(SET_ENTITY, {
+    module: 'Auth',
+    entity: 'isAuthenticated',
+    value: true
+  });
 };

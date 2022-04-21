@@ -16,6 +16,7 @@
     <div
       v-if="showMenu"
       class="header__items"
+      data-test="header-items"
     >
       <form
         action="#"
@@ -37,12 +38,14 @@
         v-if="getUserAttribute('isAdmin')"
         to="/tasks/create"
         class="header__create-task"
+        data-test="create-task-btn"
       >
         Создать карточку
       </router-link>
       <a
         href="#"
         class="header__user"
+        data-test="show-menu-btn"
         @click.stop="isMenuOpened = true"
       >
         <img
@@ -57,6 +60,7 @@
         v-if="isMenuOpened"
         v-click-outside="hideUserMenu"
         class="header__menu"
+        data-test="header-menu"
       >
         <div class="user-menu">
           <img
@@ -69,6 +73,7 @@
           <a
             href="#"
             class="user-menu__link"
+            data-test="logout-btn"
             @click="$logout"
           >
             Выйти
@@ -79,6 +84,7 @@
     <a
       v-if="showLogin"
       class="header__login"
+      data-test="login-btn"
       @click="$router.push('/login')"
     >
       Войти

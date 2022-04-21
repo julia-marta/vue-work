@@ -56,7 +56,6 @@ export default {
         },
         on: {
           focus: () => {
-            console.log(this.tags);
             this.$emit('setTags', `#${this.tags}`, false);
           },
           blur: event => updateTags(event),

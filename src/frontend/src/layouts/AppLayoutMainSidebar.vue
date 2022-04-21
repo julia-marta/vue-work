@@ -6,15 +6,20 @@
   >
     <button
       class="backlog__title"
+      data-test="backlog-title"
       @click="backlogIsHidden = !backlogIsHidden"
     >
-      <span v-show="!backlogIsHidden">
+      <span
+        v-show="!backlogIsHidden"
+        data-test="backlog-btn"
+      >
         Бэклог
       </span>
     </button>
     <div
       v-show="!backlogIsHidden"
       class="backlog__content"
+      data-test="backlog-content"
     >
       <div class="backlog__scroll">
         <div class="backlog__collapse">
@@ -39,6 +44,7 @@
                 :key="task.id"
                 :task="task"
                 class="backlog__task"
+                data-test="task"
                 @click="$router.push({ path: `/${task.id}` })"
                 @drop="$moveTask($event, task)"
               />

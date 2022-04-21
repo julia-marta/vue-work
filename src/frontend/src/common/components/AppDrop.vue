@@ -14,6 +14,9 @@ export default {
   name: 'AppDrop',
   methods: {
     onDrop({ dataTransfer }) {
+      if (!dataTransfer) {
+        return;
+      }
       const payload = dataTransfer.getData(DATA_TRANSFER_PAYLOAD);
       if (payload) {
         const transferData =

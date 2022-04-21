@@ -4,7 +4,10 @@
     @drop="$moveTask"
   >
     <h2 class="column__name">
-      <span v-if="!isInputShowed">
+      <span
+        v-if="!isInputShowed"
+        data-test="column-title"
+      >
         {{ columnTitle }}
       </span>
 
@@ -12,6 +15,7 @@
         v-else
         ref="title"
         v-model="columnTitle"
+        data-test="title-input"
         type="text"
         class="column__input"
         name="column_title"
@@ -21,11 +25,13 @@
       <AppIcon
         v-if="!isInputShowed && isAdmin"
         class="icon--edit"
+        data-test="edit-icon"
         @click="showInput"
       />
       <AppIcon
         v-if="!isInputShowed && isAdmin && !columnTasks.length"
         class="icon--trash"
+        data-test="delete-icon"
         @click="$emit('delete', column.id)"
       />
     </h2>
@@ -37,6 +43,7 @@
           :key="task.id"
           :task="task"
           class="column__task"
+          data-test="task"
           @click="$router.push({ path: `/${task.id}` })"
           @drop="$moveTask($event, task)"
         />

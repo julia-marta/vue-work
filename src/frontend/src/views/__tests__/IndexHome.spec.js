@@ -6,7 +6,7 @@ import users from '@/static/users';
 import columns from '@/static/columns';
 import { STATUSES } from '@/common/constants';
 import { authenticateUser } from '@/common/helpers';
-import IndexHome from '@/views/IndexHome.vue';
+import IndexHome from '@/views/index/IndexHome.vue';
 import AppIcon from '@/common/components/AppIcon';
 
 // Создаём локальный тестовый экземпляр Vue.

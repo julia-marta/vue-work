@@ -9,6 +9,7 @@
         <h1 class="desk__title">
           Design Coffee Lab
         </h1>
+
         <button
           v-if="getUserAttribute('isAdmin')"
           class="desk__add"
@@ -19,6 +20,7 @@
           Добавить столбец
         </button>
       </div>
+
       <div class="desk__filters">
         <div class="desk__user-filter">
           <ul class="user-filter">
@@ -63,6 +65,7 @@
         </div>
       </div>
     </div>
+
     <div
       v-if="columns.length"
       ref="columns"
@@ -77,6 +80,7 @@
         @delete="deleteColumn"
       />
     </div>
+
     <p
       v-else
       class="desk__emptiness"
@@ -96,13 +100,17 @@ import { UPDATE_FILTERS } from '@/store/mutations-types';
 export default {
   name: 'IndexHome',
   layout: 'AppLayoutMain',
-  components: { DeskColumn },
+  components: {
+    DeskColumn
+  },
+
   data() {
     return {
       STATUSES,
       newColumnTitle: 'Новый столбец'
     };
   },
+
   computed: {
     ...mapState(['users']),
     ...mapState('Auth', ['user']),
@@ -113,6 +121,7 @@ export default {
       return this.user && Object.keys(this.user).length;
     }
   },
+
   methods: {
     ...mapActions('Columns', ['post', 'put', 'delete']),
     ...mapMutations('Tasks', {
@@ -123,9 +132,11 @@ export default {
       // Note: move horizontal scroll to the new column
       this.$refs.columns.scrollLeft = this.$refs.columns.scrollWidth;
     },
+
     deleteColumn(id) {
       this.delete(id);
     },
+
     filterTasks(item, entity) {
       const resultValues = [...this.filters[entity]];
       const itemIndex = resultValues.findIndex(el => el === item);
